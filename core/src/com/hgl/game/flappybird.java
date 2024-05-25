@@ -6,6 +6,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,7 +17,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import java.util.Random;
 import java.util.Vector;
 
-import sun.jvm.hotspot.gc.shared.Space;
+//import sun.jvm.hotspot.gc.shared.Space;
 
 public class flappybird extends ApplicationAdapter {
 	final int screenWidth = 288;
@@ -41,11 +42,15 @@ public class flappybird extends ApplicationAdapter {
 	float lastPipeSpawnTime;
 	int score = 0;
 
+	float bg1X = 0;
+	float bg2X = 288;
+
 
 	// Textures
 	Texture birdTexture;
 	Array<Texture> birdTextures;
 	Texture background;
+	Texture background2;
 	Texture groundTexture;
 	Texture botPipeTexture;
 	Texture topPipeTexture;
@@ -60,12 +65,17 @@ public class flappybird extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, screenWidth, screenHeight);
 
-		birdTexture = new Texture("yellowbird-midflap.png");
+		birdTexture = new Texture("cat1.png");
 		birdTextures = new Array<Texture>();
-		birdTextures.add(new Texture("yellowbird-upflap.png"));
-		birdTextures.add(new Texture("yellowbird-midflap.png"));
-		birdTextures.add(new Texture("yellowbird-downflap.png"));
-		background = new Texture("background-day.png");
+		birdTextures.add(new Texture("cat1.png"));
+		birdTextures.add(new Texture("cat2.png"));
+		birdTextures.add(new Texture("cat3.png"));
+		birdTextures.add(new Texture("cat4.png"));
+		birdTextures.add(new Texture("cat5.png"));
+		birdTextures.add(new Texture("cat6.png"));
+//		background = new Texture("background-day.png");
+		background = new Texture("bg2.png");
+		background2 = new Texture("bg2.png");
 		botPipeTexture = new Texture("pipe.png");
 		topPipeTexture = new Texture("pipe.png");
 		groundTexture = new Texture("base.png");
@@ -98,6 +108,19 @@ public class flappybird extends ApplicationAdapter {
 		ground.y = 0;
 		ground.width = 336;
 		ground.height = 112;
+	}
+
+	private void updateBackground() {
+		bg1X -= 0.25f;
+		bg2X -= 0.25f;
+
+		if (bg1X + 288 == 0) {
+			bg1X = 288;
+		}
+
+		if (bg2X + 288 == 0) {
+			bg2X = 288;
+		}
 	}
 
 	private void updateBird() {
@@ -209,7 +232,9 @@ public class flappybird extends ApplicationAdapter {
 		}
 
 		batch.begin();
-		batch.draw(background, 0, 0);
+		updateBackground();
+		batch.draw(background, bg1X, 0);
+		batch.draw(background2, bg2X, 0);
 		for (Rectangle botPipe : botPipes) {
 			batch.draw(botPipeTexture, botPipe.x, botPipe.y);
 		}
@@ -234,14 +259,14 @@ public class flappybird extends ApplicationAdapter {
 
 			batch.draw(birdTextures.get(0), bird.x, bird.y);
 		} else {
-			batch.draw(birdTextures.get((int)(frameCount / birdAnimSpeed) % 3), bird.x, bird.y);
+			batch.draw(birdTextures.get((int)(frameCount / birdAnimSpeed) % 6), bird.x, bird.y);
 		}
 		Vector<Integer> temp = toListInt(score);
 		int w = 24 + 30*(temp.size()-1);
 		int x = (screenWidth - w) / 2;
 
 		for (Integer i : temp) {
-			batch.draw(scoreTexture[i], screenWidth - x - 24, screenHeight / 2 + 100);
+			batch.draw(scoreTexture[i], screenWidth - x - 24, screenHeight / 2f + 100);
 			x += 30;
 		}
 
